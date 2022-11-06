@@ -6,7 +6,7 @@ import math
 import pymunk.pygame_util
 import statistics
 
-
+FPS = 50
 
 def current_milli_time():
     return round(time.time() * 1000)
@@ -435,8 +435,8 @@ with mp_hands.Hands(
     
     cursor(x, y)
     pygame.display.update()
-    space.step(1/50)
-    clock.tick(50)
+    space.step(1/FPS)
+    clock.tick(FPS)
 
 
 
