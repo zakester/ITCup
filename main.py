@@ -50,7 +50,7 @@ def ball_shape(ball):
 
   blitRotateCenter(screen, ball_surface, (x-20, y-20), -angle)
   #screen.blit(ball_surface_with_rotation, (x-20,y-20))
-  pygame.draw.circle(screen, (0,255,255), (x+20-20,y+20-20), 3)
+  #pygame.draw.circle(screen, (0,255,255), (x+20-20,y+20-20), 3)
 
 def onBallOutOfRange(space, ball):
   x = int(ball.body.position.x)
@@ -73,7 +73,7 @@ def onLose(space, ball):
     global loses
     loses = loses + 1
     global text_loses
-    text_loses = my_font.render(f'Loses: {loses}', False, (0, 0, 0))
+    text_loses = my_font.render(f'Loses: {loses}', False, (255, 255, 255))
     heLost = False
     space.remove(ball, ball.body)
     b = create_ball_physics(space)
@@ -112,7 +112,7 @@ def create_floor(space):
 def floor_shape(floor):
   x = int (floor.body.position.x)
   y = int (floor.body.position.y)
-  pygame.draw.rect(screen, (25,20,0), pygame.Rect(x-320, y-75, 640, 150), 100)
+  pygame.draw.rect(screen, (1,6,13), pygame.Rect(x-320, y-75, 640, 150), 100)
 
 
 def create_wall(space, position, size, elasticity=0.6, friction=0.9):
@@ -136,8 +136,10 @@ def wall_shape(walls):
     pos = wall.bb.left, wall.bb.top
     w = wall.bb.right - wall.bb.left
     h = wall.bb.top - wall.bb.bottom
-
-    pygame.draw.rect(screen, (255,255,255), pygame.Rect(pos[0], y-(h/2), w, h))
+    global wall_surface
+    wall_surface = pygame.transform.scale(wall_surface, (w, h))
+    screen.blit(wall_surface, (pos[0], y-(h/2)))
+    #pygame.draw.rect(screen, (255,255,255), pygame.Rect(pos[0], y-(h/2), w, h))
 
 
 def create_boundaries(space, width, height):
@@ -177,13 +179,11 @@ def create_trophy(space):
   return shape
 
 def trophy_shape(trophy):
-    #x = int(trophy.body.position.x)
+    x = int(trophy.body.position.x)
     
     y = int(trophy.body.position.y)
-    pos = trophy.bb.left, trophy.bb.top
-    w = trophy.bb.right - trophy.bb.left
-    h = trophy.bb.top - trophy.bb.bottom
-    
+    angle = math.degrees(trophy.body.angle)
+    blitRotateCenter(screen, trophy_surface, (x-12.5, y-29.935), -angle)
     #pygame.draw.rect(screen, (255,255,255), pygame.Rect(pos[0], y-(h/2), w, h))
 
 loses = 0
@@ -200,28 +200,32 @@ def ball_trophy_collision(arbiter, space, data):
   global heWins
   heWins = True
   global ball
-  ball = onWin(space, ball)
+  global trophy
+  ball, trophy = onWin(space, ball, trophy)
   global canShoot
   canShoot = True
 
   
 
 
-def onWin(space, ball):
+def onWin(space, ball, trophy):
   global heWins
   global wins
   global text_wins
 
   b = None
+  t = None
 
   if (heWins == True):
     space.remove(ball, ball.body)
+    space.remove(trophy, trophy.body)
+    t = create_trophy(space)
     b = create_ball_physics(space)
     wins = wins + 1
-    text_wins = my_font.render(f'Wins: {wins}', False, (0, 0, 0))
+    text_wins = my_font.render(f'Wins: {wins}', False, (255, 255, 255))
 
 
-  return b
+  return b, t
 
 
 
@@ -237,13 +241,23 @@ pygame init
 pygame.init()
 screen = pygame.display.set_mode((640,480))
 clock = pygame.time.Clock()
+
 ball_surface = pygame.image.load('img/ball.png').convert_alpha()
 ball_surface = pygame.transform.scale(ball_surface, (40, 40))
 
+trophy_surface = pygame.image.load('img/trophy.png').convert_alpha()
+
+
+background_surface = pygame.image.load('img/background.png').convert_alpha()
+
+wall_surface = pygame.image.load('img/wall.png').convert_alpha()
+
+winner_surface = pygame.image.load('img/winner.png').convert_alpha()
+
 
 my_font = pygame.font.SysFont('Comic Sans MS', 30)
-text_wins = my_font.render(f'Wins: {wins}', False, (0, 0, 0))
-text_loses = my_font.render(f'Loses: {loses}', False, (0, 0, 0))
+text_wins = my_font.render(f'Wins: {wins}', False, (255, 255, 255))
+text_loses = my_font.render(f'Loses: {loses}', False, (255, 255, 255))
 
 
 
@@ -308,6 +322,8 @@ applayForce = False
 starting_pos = (0, 0)
 ending_pos = (0, 0)
 
+wins_delay = 50
+
 # For webcam input:
 cap = cv2.VideoCapture(0)
 with mp_hands.Hands(
@@ -348,9 +364,12 @@ with mp_hands.Hands(
 
     def_pos_x = starting_pos[0] - ending_pos[0]
     def_pos_y = starting_pos[1] - ending_pos[1]
-    screen.fill((255,100,150))
-    screen.blit(text_wins, (10, 10))
-    screen.blit(text_loses, (10, 30))
+    if (heWins):
+      screen.blit(winner_surface, (0,0))
+    else:
+      screen.blit(background_surface, (0,0))
+    screen.blit(text_wins, (250-100, 10))
+    screen.blit(text_loses, (400-100, 10))
 
     if results.multi_hand_landmarks:
       for hand_landmarks in results.multi_hand_landmarks:
@@ -415,25 +434,33 @@ with mp_hands.Hands(
 
 
     #create_boundaries(space, 640, 480)
-    space.debug_draw(draw_options)
-    floor_shape(floor=floor)
-    wall_shape(walls=walls)
-    trophy_shape(trophy=trophy)
-    b = onBallOutOfRange(space, ball)
-    if b != None:
-      ball = b
-    if (canShoot == False):
-      b = onLose(space, ball)
+    #space.debug_draw(draw_options)
+    if (heWins == False):
+      floor_shape(floor=floor)
+      wall_shape(walls=walls)
+      trophy_shape(trophy=trophy)
+      b = onBallOutOfRange(space, ball)
       if b != None:
         ball = b
-        canShoot = True
+      if (canShoot == False):
+        b = onLose(space, ball)
+        if b != None:
+          ball = b
+          canShoot = True
+
+        
+      
+      ball_shape(ball=ball)
+
 
       
-    
-    ball_shape(ball=ball)
+      cursor(x, y)
+    else:
+      wins_delay -= 1
+      if (wins_delay == 0):
+        heWins = False
+        wins_delay = 50
 
-    
-    cursor(x, y)
     pygame.display.update()
     space.step(1/FPS)
     clock.tick(FPS)
