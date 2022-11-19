@@ -426,7 +426,7 @@ with mp_hands.Hands(
 
         
 
-    #cv2.imshow('MediaPipe Hands', image)
+    #cv2.imshow('MediaPipe Hands', image) to show camera
 
     
 
