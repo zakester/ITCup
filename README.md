@@ -24,7 +24,7 @@ The Welcom Day is where open registraions to new members and we show some of our
 The goal is to achive the cup without touching the bars.
 
 ## Screenshots
-![01](/assets/images/01.png) ![02](/assets/images/02.png)
+![01](/assets/images/01.png =481x389) ![02](/assets/images/02.png)
 ![03](/assets/images/03.png)
 ## Video
 ![01](/assets/gif/01.gif)
