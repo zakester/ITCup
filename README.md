@@ -24,10 +24,18 @@ The Welcom Day is where open registraions to new members and we show some of our
 The goal is to achive the cup without touching the bars.
 
 ## Screenshots
-![01](/assets/images/01.png =481x389) ![02](/assets/images/02.png)
-![03](/assets/images/03.png)
+<p align="center">
+  <img src="/assets/images/01.png" width="447" height="361"> <img src="/assets/images/02.png" width="447" height="361">
+</p>
+<p align="center">
+  <img src="/assets/images/03.png" width="447" height="361">
+</p>
+
 ## Video
-![01](/assets/gif/01.gif)
+<p align="center">
+  <img src="/assets/gif/01.gif" alt="animated" />
+</p>
+
 # Installation
 - Create conda environment with python 3.9 `conda create --name ITCup python==3.9`.
 - Dont't forget to activate environment `conda activate ITCup`.
