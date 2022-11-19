@@ -25,10 +25,10 @@ The goal is to achive the cup without touching the bars.
 
 ## Screenshots
 <p align="center">
-  <img src="/assets/images/01.png" width="447" height="361"> <img src="/assets/images/02.png" width="447" height="361">
+  <img src="/assets/images/01.png" width="362" height="292"> <img src="/assets/images/02.png" width="362" height="292">
 </p>
 <p align="center">
-  <img src="/assets/images/03.png" width="447" height="361">
+  <img src="/assets/images/03.png" width="362" height="292">
 </p>
 
 ## Video
